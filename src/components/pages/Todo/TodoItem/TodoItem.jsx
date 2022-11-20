@@ -59,7 +59,7 @@ const TodoItem = ({todo}) => {
     }, [todo.files, uploading])
 
     useEffect(() => {
-        if (dayjs().isAfter(dayjs(todo.date))) {
+        if (!todo.complete && dayjs().isAfter(dayjs(todo.date))) {
             const db = getDatabase()
 
             const updates = {}
@@ -67,7 +67,7 @@ const TodoItem = ({todo}) => {
             
             update(ref(db), updates)
         }
-    }, [])
+    })
 
     /**
      * Обработчик onClick для смены статуса todo
