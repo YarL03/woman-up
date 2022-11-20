@@ -1,0 +1,23 @@
+@import '../../../less/variables.less';
+
+.button {
+    padding: 8px 30px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    background-color: @purple;
+    border-radius: 6px;
+    border: 1px transparent solid;
+    cursor: pointer;
+    transition: background-color .15s ease-in-out;
+
+    &:hover {
+        background-color: darken(@purple, 5%);
+    }
+    
+    &.secondary {
+        color:#fff;
+        font-size: 14px;
+        padding: 8px 20px;
+    }
+}

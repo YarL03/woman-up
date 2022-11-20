@@ -1,0 +1,117 @@
+@import '../../../../less/variables.less';
+
+.todoItem {
+    display: flex;
+    justify-content: space-between;
+    height: 80px;
+    text-align: initial;
+    padding: 5px 0;
+    background-color: darken(@yellow, 2%);
+    transition: background-color .2s ease-in-out;
+    position: relative;
+
+    &[data-edit='true'] {
+        height: 130px;
+    }
+
+    > form {
+        padding: 5px;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+
+
+        .files {
+            padding: 0 5px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+
+            .download {
+                > svg {
+                    width: 14px;
+                    height: 14px;
+                    cursor: pointer;
+                }
+            }
+        }
+
+        >div:first-child {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        >input {
+            height: 20px;
+        }
+    }
+
+    &[data-complete='true'] {
+        background-color: green;
+        opacity: .5;
+        user-select: none;
+    }
+
+    &[data-complete='false']:hover {
+        background-color: darken(@yellow, 7%);
+    }
+
+    &:nth-child(n):not(&:last-child) {
+        border-bottom: 1px solid @red;
+    }
+
+    > div:first-child {
+        display: flex;
+        width: 85%;
+        
+        > * {
+            padding: 0 8px;
+            width: calc(100% / 4);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .files {
+            padding: 0 5px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+    }
+
+    > div:nth-child(2) {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: flex-end;
+        width: 15%;
+
+        > * {
+            cursor: pointer;
+            transition: color .15s ease-in-out;
+            font-weight: bold;
+            color: rgba(#000, .8);
+            text-align: end;
+            padding: 0 8px;
+            width: fit-content;
+            user-select: none;
+
+
+            &:first-child:hover {
+                color: @red;
+            }
+
+            &:nth-child(2):hover {
+                color: rgb(9, 133, 9);
+            }
+        }
+    }
+
+    h1 {
+        position: absolute;
+        left: calc(50% - 82px);
+        mix-blend-mode: overlay;
+    }
+}

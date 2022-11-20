@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: pages/Todo/TodoItem/EditForm.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: pages/Todo/TodoItem/EditForm.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { useRef, useState } from "react"
+import Button from "../../../ui/Button/Button"
+import Field from "../../../ui/Field/Field"
+import { getDatabase, ref as refDb, set } from "firebase/database";
+import { getStorage, ref as refStorage, uploadBytes, deleteObject } from "firebase/storage";
+import styles from './TodoItem.module.less'
+
+/**
+ * Форма для редактирования todo
+ * 
+ * @component
+ * @param links - массив для рендера ссылок
+ * @param close - меняет edit --> false
+ * @param todo - конкретный todo
+ * @param setUploading 
+ */
+const EditForm = ({links, close, todo, setUploading}) => {
+    const [heading, setHeading] = useState(todo.heading)
+    const [descrip, setDescrip] = useState(todo.descrip)
+    const [date, setDate] = useState(todo.date)
+    const ref = useRef(null)
+
+    /**
+     * Записывает сделанные изменения в БД и закрывает данный компонент 
+     * 
+     * @param e - submitEvent
+     */
+    const onSubmit = (e) => {
+        e.preventDefault()
+
+        const db = getDatabase()
+        const uploadedFiles = ref.current[3].files.length ? ref.current[3].files : null // количество загруженных файлов
+
+        set(refDb(db, `todos/${todo.id}`), {
+            ...todo,
+            heading,
+            descrip,
+            date,
+            files: todo.files ?  todo.files : uploadedFiles ? uploadedFiles.length : 0
+        })
+
+        if (uploadedFiles) {
+            const storage = getStorage()
+
+            const promises = Object.entries(uploadedFiles).reduce((prev, cur) => {
+                cur[0] !== 'length' &amp;&amp; prev.push(uploadBytes(refStorage(storage, `${todo.id}/${cur[1].name}`), cur[1]))
+                return prev
+            }, [])
+
+            setUploading(true)
+
+            Promise.allSettled(promises)
+            .then((results) => {
+                setUploading(false)
+            })
+        }
+        close()
+    }
+
+    /**
+     * Удаляет файл из хранилища
+     * 
+     * @param {{url: string, name: string, storageRef: {}}} blobRef объект с 3 свойствами: url - ссылка для &lt;a>, name - имя скачиваемого файла, storageRef - ссылка на место файла в хранилище
+     */
+    const onDeleteFile = (blobRef) => () => {
+
+        deleteObject(blobRef.storageRef)
+        .then(() => {
+            const db = getDatabase()
+
+            set(refDb(db, `todos/${todo.id}`), {
+                ...todo,
+                files: todo.files - 1
+            })
+        })
+    }
+
+    /**
+     * Закрывает данный компонент
+     */
+    const onDoubleClick = () => close()
+
+    return (
+        &lt;form ref={ref} onSubmit={onSubmit} onDoubleClick={onDoubleClick}>
+            &lt;div>
+                &lt;Field
+                    onChange={(e) => setHeading(e.target.value)}
+                    value={heading}
+                    name="heading"
+                    placeholder="Heading"
+                    required
+                    />
+                &lt;Field
+                    onChange={(e) => setDescrip(e.target.value)}
+                    value={descrip}
+                    name="description"
+                    placeholder="Description"
+                    required
+                    />
+                &lt;Field
+                    onChange={(e) => setDate(e.target.value)}
+                    value={date}
+                    name="date"
+                    type="datetime-local"
+                    required
+                    />
+            &lt;/div>
+            &lt;Field
+                name="files"
+                type="file"
+                multiple
+                accept="image/*,.png,.jpg,.git,.web,.txt,.pdf,.doc,.docx"
+            />
+            
+            &lt;div className={styles.files}>
+                {links.map(blobRef => 
+                    (&lt;div key={blobRef.url} className={styles.download}>
+                        &lt;svg onClick={onDeleteFile(blobRef)} focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="CloseIcon" aria-label="fontSize small">&lt;path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z">&lt;/path>&lt;/svg>
+                        &lt;a  download={blobRef.name} href={blobRef.url}>
+                            {blobRef.name}
+                        &lt;/a>
+                    &lt;/div>)
+                )}
+            &lt;/div>
+            &lt;div>
+                &lt;Button type="submit" text="Edit" secondary/>
+            &lt;/div>
+        &lt;/form>
+    )
+}
+
+export default EditForm</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Button.html">Button</a></li><li><a href="EditForm.html">EditForm</a></li><li><a href="Header.html">Header</a></li><li><a href="HeaderForm.html">HeaderForm</a></li><li><a href="Layout.html">Layout</a></li><li><a href="Todo.html">Todo</a></li><li><a href="TodoItem.html">TodoItem</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Field">Field</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.0</a> on Sun Nov 20 2022 19:01:46 GMT+0800 (Иркутск, стандартное время)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

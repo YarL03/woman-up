@@ -1,0 +1,37 @@
+@import '../../../../less/variables.less';
+
+.todo-header {
+    padding: 10px;
+    border-bottom: 1px solid darken(@orange, 10%);
+
+    h1 {
+        margin: 0;
+        margin-bottom: 10px;
+        opacity: .85;
+    }
+
+    .headerForm {
+        display: flex;
+        flex-direction: column;
+
+        .date {
+            display: block;
+            width: 100%;
+        }
+
+        input[type='file'] {
+            cursor: pointer;
+        }
+
+        > div {
+            display: flex;
+            justify-content: flex-end;
+            padding-right: 20px;
+            margin-bottom: 5px;
+        }
+
+        > *:not(div) {
+            margin-bottom: 1.5rem;
+        }
+    }
+}
